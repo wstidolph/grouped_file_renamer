@@ -88,7 +88,7 @@ The program doesn't blindly apply renaming to all files; it only renames files w
 
 ## After-Scan sorting
 
-Another use is to all after-scan sorting. SUppose you just scan many files into an `in` directory, then drag and drop them into many different directories (and then maybe sort the diles in each directory). So now you have the "topic" in the directoy name, but not in the file name:
+Suppose you just scan many files into an `in` directory, then drag and drop them into many different directories (and then maybe sort the diles in each directory):
 ```
 vacation/in_0001_a.jpg
 vacation/in_0123.jpg
@@ -103,10 +103,26 @@ vacation/vacation_i0010_a.jpg
 vacation/vacation_i0020.jpg
 vacation/vacation_i0020_b.jpb
 work_party/work_party_i0010.jpg
-work_party/woork_party_i0010_a.jpg
+work_party/work_party_i0010_a.jpg
 ```
-Now if you grab files and toss them the same folder, their name keeps them grouped, and the ID field/suffix keeps them ordered with the group.
+Now if you grab files and toss them the same folder (for example, `pictures`), their name keeps them grouped, and the ID field/suffix keeps them ordered with the group:
 
+```
+pictures/vacation_i0010_a.jpg
+pictures/vacation_i0020.jpg
+pictures/vacation_i0020_b.jpb
+pictures/work_party_i0010.jpg
+pictures/work_party_i0010_a.jpg
+```
+
+If you don't want to use the directories you grouped them with, you can just specify your own prefix, and let the ID counter increment between directories:
+```
+vacation/P_5_i0010_a.jpg
+vacation/P_5_i0020.jpg
+vacation/P_5_i0020_b.jpb
+work_party/P_5_i0030.jpg
+work_party/P_5_i0030_a.jpg
+```
 ## Undo
 After the renaming, the `FOO` directory holds a file named `rename_history.csv` and the ordering file is renamed (by appending the date/time of the renaming); the program then supports:
 `~/scans python3 gfr.py undo FOO` to read in the rename history and revert all the renames (and delete the `rename_history.csv` file) so you're back where you started.
