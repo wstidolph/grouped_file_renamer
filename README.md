@@ -43,7 +43,7 @@ FOO_0002.jpg
 FOO_0002_a.jpg
 FOO_0002_b.jpg
 ```
-and then use this program to rename the scanner files
+and then use this program to rename the scanner files, something like (depending on how you invoke python scripts in your environment):
 
 `~/scans python3 gfr.py rename FOO` (accepting defaults for how to handle the new ID field)
 
@@ -83,19 +83,23 @@ FOO_0004_b.jpg -> FOO_i0040_b.jpg
 ```
 Using command line options you can change the way the the ID field is prefixed, where it starts, how many characters it pads out to, and what is the step size.
 
-
 The program doesn't blindly apply renaming to all files; it only renames files which meet a regular expression you pass in, called the `id-regex`. The default is `\d{2,5}` meaning "a string of  2 to 5 digits" so files with names like "my letter.doc" or "my_letter_3.doc" won't be renamed, but "my_letter_003.doc" would be renamed.
 
 ## After-Scan sorting
 
-Suppose you just scan many files into an `in` directory, then drag and drop them into many different directories (and then maybe sort the diles in each directory):
+Suppose you just scan many files into an `in` directory, then drag and drop them into many different directories (and then maybe sort the files in each directory):
 ```
 vacation/in_0001_a.jpg
 vacation/in_0123.jpg
-vacation_in_0123_b.jpb
+vacation/in_0123_b.jpb
+vacation/.fssort.ini <= controls order just in vacation
 work_party/in_0002.jpg
 work_party/in_0002_a.jpg
+work_party/.fssort.ini <= controls order just in work_party
 ```
+So now you want to start renaming at a root directory but decend into the driectories below (e.g., descend into `vatation` and `work_party`):
+
+``~/scans python3 gfr.py --do-subtree rename FOO` 
 
 When renaming, the generated name starts with a prefix, and the default is the name of the directory, and the default is to resart the ID number field in each directory (you have controls for all those) so these will be renamed something like:
 ```
@@ -123,11 +127,15 @@ vacation/P_5_i0020_b.jpb
 work_party/P_5_i0030.jpg
 work_party/P_5_i0030_a.jpg
 ```
+
+## Renaming if no sort file
+You don't have to have a sort order; maybe you don't care about the order of file groups within the directory, you just want to get the directory name into the group filename. And maybe some directories you sorted but others you didn't care. So, you can use the `--skip-if-no-orderfile` option ... if it's set (as is the default) then the program doesn't alter that directoty, but if `--no-skip-if-no-orderfile` then directories without an orderfile will be processed. With no order file, the program falls back on whatver order teh file system has the files (probably alphabetic by filename).
+
 ## Undo
 After the renaming, the `FOO` directory holds a file named `rename_history.csv` and the ordering file is renamed (by appending the date/time of the renaming); the program then supports:
 `~/scans python3 gfr.py undo FOO` to read in the rename history and revert all the renames (and delete the `rename_history.csv` file) so you're back where you started.
 
-The program does not descend into or beyond a list of excluded subdirectories:
+The program does not descend into or beyond a list of excluded subdirectories (from file `.gfr.ignore`):
 ```
 .git
 .vscode
@@ -146,4 +154,5 @@ This has met my needs, but as part of learning more Python I expect to tackle:
 * tests covering UNDO
 * adopt python logging
 * filtering on extension as well as embedded-ID
+* add a simple per-directory flag/control file (`.gfr-control.ini`) to skip the dir, set different id-regex, whatever
 
