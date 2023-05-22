@@ -58,7 +58,7 @@ import typer
 
 __author    = "Wayne Stidolph"
 __email     = "wayne@stidolph.com"
-__license   = "MIT License"
+__license   = "MIT License (see file LICENSE)"
 __copyright = "Copyright Wayne Stidolph, 2023"
 __status    = "Development"
 
