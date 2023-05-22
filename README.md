@@ -128,5 +128,6 @@ so apologies if coding sucks/is non-Pythonic (suggestions for improvement?)
 This has met my needs, but as part of learning more Python I expect to tackle:
 * modularize (`rename`, `undo`, `topshell`, and `support` modules I think)
 * tests covering UNDO
+* adopt python logging
 * filtering on extension as well as embedded-ID
 
