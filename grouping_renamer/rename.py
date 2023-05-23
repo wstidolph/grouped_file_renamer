@@ -5,7 +5,7 @@ from typing import List
 from support import change_dir,fetch_lists,loadfile_lines
 from support import find_case_insensitive, remove_any_matching, scrub_dups, scrub_not_matching
 from support import get_fullid,get_next_id
-# notify* should move to loggin calls
+# notify* should move to logging calls
 from support import notify_user,notify_user_file,notify_user_dir, notify_user_prob
 from support import get_is_dry_run
 

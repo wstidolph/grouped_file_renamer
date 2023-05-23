@@ -1,8 +1,12 @@
 import unittest
+import sys
+sys.path.append("grouping_renamer") # so modules can import each other
+                                    # when run from tests/
 import os
 from pathlib import Path
 
 import grouping_renamer.rename as ren_mod
+
 
 class TestRename(unittest.TestCase):
     def test_fix_orderlines_adapts_to_case(self):
@@ -97,5 +101,6 @@ class TestRename(unittest.TestCase):
         self.assertEqual(rd[1]['to'], expected[1]['to'])
         self.assertEqual(rd[2]['from'], expected[2]['from'])
         self.assertEqual(rd[2]['to'], expected[2]['to'])
+
 if __name__ == '__main__':
     unittest.main()

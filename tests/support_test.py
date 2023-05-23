@@ -8,7 +8,7 @@ class TestSupport(unittest.TestCase):
         ol=['a', 'alibaba']
         dl=['A','b'] # as from a dirlist
         rl=spt.find_case_insensitive(ol, dl)
-        self.assertEquals(rl, ['A'])
+        self.assertEqual(rl, ['A'])
         
     def test_scrub_dups(self):
         """test that we remove duplicates and blanks, keep others"""
@@ -42,12 +42,12 @@ class TestSupport(unittest.TestCase):
         
         # verify get back copy if no must_regex
         snm = spt.scrub_not_matching(dlist,None)
-        self.assertEquals(dlist, snm)
+        self.assertEqual(dlist, snm)
         snm = spt.scrub_not_matching(dlist,r'')
-        self.assertEquals(dlist, snm)
+        self.assertEqual(dlist, snm)
         
         snm=spt.scrub_not_matching(dlist, r'_i')
-        self.assertEquals(snm, ['x_i0','x_i0010'])
+        self.assertEqual(snm, ['x_i0','x_i0010'])
 
     def test_loadfile_lines(self):
         """Test find, opens, reads a line-structured file"""

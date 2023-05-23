@@ -17,7 +17,7 @@ verbose_level:int=3
 def set_verbosity(level: int):
     verbose_level = level
     
-is_dry_run:bool=True
+is_dry_run=True
 def set_is_dry_run(dryrun:bool):
     is_dry_run=dryrun
 def get_is_dry_run():

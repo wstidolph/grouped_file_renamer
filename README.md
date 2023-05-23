@@ -143,14 +143,14 @@ __pycache__
 ```
 
 On each useage the program renames the ordering file (if it exists)
-and writes a rename_history from/to CSV file. Future plans include an "undo"
+and writes a rename_history from/to CSV file.
 
 ### NOTE: partly written to force me into learning some Python (3.11),
 so apologies if coding sucks/is non-Pythonic (suggestions for improvement?)
 
 # Future
 This has met my needs, but as part of learning more Python I expect to tackle:
-* modularize (`rename`, `undo`, `topshell`, and `support` modules I think)
+* ~~modularize (`rename`, `undo`, `topshell`, and `support` modules I think)~~
 * tests covering UNDO
 * adopt python logging
 * filtering on extension as well as embedded-ID
