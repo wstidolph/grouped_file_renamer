@@ -1,7 +1,9 @@
 import os
 import re
 import logging
+from typing import List
 from collections import OrderedDict
+import typer # temp, should go away with migrate to logging
 
 __author    = "Wayne Stidolph"
 __email     = "wayne@stidolph.com"
@@ -11,13 +13,15 @@ __status    = "Development"
 
 # LOGGING seems like overfill to instantaite multiple Loggers etc
 # just do something pretty simple for now
-global verbose_level
+verbose_level:int=3
 def set_verbosity(level: int):
     verbose_level = level
     
-global is_dry_run
+is_dry_run:bool=True
 def set_is_dry_run(dryrun:bool):
     is_dry_run=dryrun
+def get_is_dry_run():
+    return is_dry_run
     
 def notify_user(msg):
     if is_dry_run:

@@ -1,12 +1,13 @@
 import os
 import datetime
+from typing import List
 
 from support import change_dir,fetch_lists,loadfile_lines
 from support import find_case_insensitive, remove_any_matching, scrub_dups, scrub_not_matching
 from support import get_fullid,get_next_id
 # notify* should move to loggin calls
 from support import notify_user,notify_user_file,notify_user_dir, notify_user_prob
-from support import is_dry_run
+from support import get_is_dry_run
 
 def make_bu_name(fn: str, bustr: str):
     """add backup-indication string (bustr) to the fn without change file extension"""
@@ -101,7 +102,7 @@ def do_rename(rename_list, hist_file_obj) -> List[str]:
         if is_sane :
             notify_user_file('renaming: '+ fname + ' to '+ tname)
             used_newnames.append(tname)
-            if not is_dry_run:
+            if not get_is_dry_run():
                 os.rename(fname, tname)
                 hist_file_obj.write(fname+','+tname+'\n')
     notify_user_dir('dir '+os.getcwd()+' renamed '+ str(len(used_newnames)) + ' files')
@@ -147,7 +148,7 @@ def rename_in_dir(path, prefix_ctl,
     now_str = now.strftime("%Y_%m_%d_%H_%M_%S")
        
     #now, we have the order file out of the way, let's rename and keep track
-    if not is_dry_run:
+    if not get_is_dry_run():
         orderfile_bak = make_bu_name(orderfile_name, now_str)
         hist_file_name = make_bu_name(history_file, now_str)
         hist_file_obj =  open(hist_file_name, 'a')

@@ -1,8 +1,10 @@
-from gfr import get_dirs_to_process
-from gfr import fetch_ignore
-from gfr import rename_in_dir
-from gfr import undo_in_dir
-from gfr import notify_user, notify_user_dir, get_id_match
+from support import get_dirs_to_process
+from support import fetch_ignore
+from rename import rename_in_dir
+from undo import undo_in_dir
+
+from support import notify_user, notify_user_dir, get_id_match
+# migrate to logging calls
 from support import set_verbosity, notify_user, notify_user_dir
 from support import set_is_dry_run
 
