@@ -129,11 +129,11 @@ work_party/P_5_i0030_a.jpg
 ```
 
 ## Renaming if no sort file
-You don't have to have a sort order; maybe you don't care about the order of file groups within the directory, you just want to get the directory name into the group filename. And maybe some directories you sorted but others you didn't care. So, you can use the `--skip-if-no-orderfile` option ... if it's set (as is the default) then the program doesn't alter that directoty, but if `--no-skip-if-no-orderfile` then directories without an orderfile will be processed. With no order file, the program falls back on whatver order teh file system has the files (probably alphabetic by filename).
+You don't have to have a sort order; maybe you don't care about the order of file groups within the directory, you just want to get the directory name into the group filename. And maybe some directories you sorted but others you didn't care. So, you can use the `--skip-if-no-orderfile` option ... if it's set (as is the default) then the program doesn't alter that directoty, but if `--no-skip-if-no-orderfile` then directories without an orderfile will be processed. With no order file, the program falls back on whatver order the file system has the files (probably alphabetic by filename).
 
 ## Undo
-After the renaming, the `FOO` directory holds a file named `rename_history.csv` and the ordering file is renamed (by appending the date/time of the renaming); the program then supports:
-`~/scans python3 gfr.py undo FOO` to read in the rename history and revert all the renames (and delete the `rename_history.csv` file) so you're back where you started.
+After the renaming, every directory in which renaming occurred holds a file named `rename_history.csv` and the ordering file is renamed (by appending the date/time of the renaming). In the event you do multiple renames, you'll end up with multiple `rename_history_<datetime>.csv` files. The program then supports:
+`~/scans python3 gfr.py undo FOO` to read in the latest rename history and revert all the renames (and delete the `rename_history.csv` file) so you're back where you started. 
 
 The program does not descend into or beyond a list of excluded subdirectories (from file `.gfr.ignore`):
 ```
