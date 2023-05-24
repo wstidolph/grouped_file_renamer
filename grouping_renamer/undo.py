@@ -19,14 +19,14 @@ def get_history_filename(history_filename_root:str, dirlist: list[str]):
   
 def undo_rename(curr_name:str, prev_name:str, appender_str:str):
     # if conflict, rename to <to_name>__<appender_str>
-
+  
     tgt_name = prev_name
     if os.path.exists(prev_name):
         tgt_name += '__' + appender_str
         
     log.debug('reverting name '+ curr_name+ '  to '+ tgt_name)
     try:
-        os.rename(curr_name, prev_name)
+        os.rename(curr_name, tgt_name)
     except FileNotFoundError:
         log.warning("file to revert: {0} (from history) does not exist".format(curr_name))
     except:
