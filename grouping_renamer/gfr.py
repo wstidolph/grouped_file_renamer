@@ -16,7 +16,7 @@ from support import fetch_ignore
 from rename import rename_in_dir
 from undo import undo_in_dir
 
-from support import notify_user, notify_user_dir, get_id_match
+from support import get_id_match
 
 from support import set_verbosity
 from support import set_is_dry_run
