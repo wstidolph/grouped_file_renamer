@@ -1,5 +1,9 @@
 import os
-from support import change_dir,loadfile_lines,notify_user_file,notify_user_dir, notify_user_prob
+import logging
+
+from support import change_dir,loadfile_lines
+
+log=logging.getLogger('undo')
 
 def get_history_filename(history_filename_root:str, dirlist: list[str]):
     """find one (oldest) renaming file (there may be 0..)"""
@@ -10,7 +14,7 @@ def get_history_filename(history_filename_root:str, dirlist: list[str]):
         hf = sorted(histfiles)
         return hf[-1]+hfr_ext # should be oldest
     else:
-        notify_user_dir('no history '+ history_filename_root + ' to reverse in '+ os.getcwd())
+        log.warning('no history '+ history_filename_root + ' to reverse in '+ os.getcwd())
         return None
   
 def undo_rename(curr_name:str, prev_name:str, appender_str:str):
@@ -20,13 +24,13 @@ def undo_rename(curr_name:str, prev_name:str, appender_str:str):
     if os.path.exists(prev_name):
         tgt_name += '__' + appender_str
         
-    notify_user_file('reverting name '+ curr_name+ '  to '+ tgt_name)
+    log.debug('reverting name '+ curr_name+ '  to '+ tgt_name)
     try:
         os.rename(curr_name, prev_name)
     except FileNotFoundError:
-            notify_user_prob("file to revert: {0} does not exist".format(curr_name))
+        log.warning("file to revert: {0} (from history) does not exist".format(curr_name))
     except:
-        notify_user_prob('could not revert ' + curr_name + ' to ' + prev_name)
+        log.warning('could not revert ' + curr_name + ' to ' + prev_name)
       
 def undo_in_dir(history_filename_root:str, path:str='.',
                 keep_rename_history=False, adapt_case:bool=False):
@@ -38,7 +42,7 @@ def undo_in_dir(history_filename_root:str, path:str='.',
     hfilename = get_history_filename(history_filename_root, dirlist)
 
     if hfilename:
-        notify_user_dir('using history file '+ hfilename)
+        log.info('using history file '+ hfilename)
         hfile_lines = loadfile_lines(path, hfilename)
         if hfile_lines: # this is the lines for one particular rename
             # process rename actions in reverse order

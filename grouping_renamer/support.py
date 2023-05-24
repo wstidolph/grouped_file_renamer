@@ -11,8 +11,8 @@ __license   = "MIT License (see file LICENSE)"
 __copyright = "Copyright Wayne Stidolph, 2023"
 __status    = "Development"
 
-# LOGGING seems like overfill to instantaite multiple Loggers etc
-# just do something pretty simple for now
+log = logging.getLogger('support')
+
 verbose_level:int=3
 def set_verbosity(level: int):
     verbose_level = level
@@ -23,22 +23,6 @@ def set_is_dry_run(dryrun:bool):
 def get_is_dry_run():
     return is_dry_run
     
-def notify_user(msg):
-    if is_dry_run:
-        typer.echo(msg) #get nice color effects or whatnot
-    else:    
-        logging.info(msg) # might be piped to log file, don't do fancy
-        
-def notify_user_prob(msg: str):
-    if verbose_level > 0:
-        notify_user(msg)
-def notify_user_dir(msg: str):
-    if verbose_level > 1:
-        notify_user(msg)
-def notify_user_file(msg: str):
-    if verbose_level > 2:
-        notify_user(msg)
-
 # move to 'id_handling' module?
 def get_id_match(filename, id_regex):
     """extract the embedded ID, which is the *last* match to the id_regex"""
@@ -64,16 +48,16 @@ def change_dir(path) -> bool:
     """centralize the error reporting for changing dir"""
     try:
         os.chdir(path)
-        notify_user_dir("change to: {0}".format(os.getcwd()))
+        log.info("change to: {0}".format(os.getcwd()))
         return True
     except FileNotFoundError:
-        notify_user_prob("Directory: {0} does not exist".format(path))
+        log.error("Directory: {0} does not exist".format(path))
         return False
     except NotADirectoryError:
-        notify_user_prob("{0} is not a directory".format(path))
+        log.error("{0} is not a directory".format(path))
         return False
     except PermissionError:
-        notify_user_prob("You do not have permissions to change to {0}".format(path))
+        log.error("You do not have permissions to change to {0}".format(path))
         return False
 
 def find_case_insensitive(orig_list: list[str], dlist: list[str])-> list[str]:
@@ -104,7 +88,7 @@ def get_dirs_to_process(startdir: str, exclude: list[str], do_subtree:bool) -> l
                 os.path.abspath(os.path.join(node, d))
                 for d in dirs if d not in exclude]
             dirs[:]=[d for d in dirs if d not in exclude] # assign to dirs to prune
-    notify_user_dir('processing dirs: ' + str(dirs_to_process))
+    log.info('processing dirs: ' + str(dirs_to_process))
     return dirs_to_process
       
 def fetch_lists(folder, orderfile_name, adapt_case=False) -> list[List[str], List[str]]:
@@ -129,7 +113,7 @@ def fetch_lists(folder, orderfile_name, adapt_case=False) -> list[List[str], Lis
 
     else: # never found the order file, so we'll use the
           # sorted-by-name dirlist as the initial ordering value
-        notify_user_dir('no orderfile ' + orderfile_name + ' in '+ folder)
+        log.info('no orderfile ' + orderfile_name + ' in '+ folder)
           
     return [dirlist, orderedlines_init]
   
@@ -144,7 +128,7 @@ def loadfile_lines(folder, fname)->list[str]:
                 line = line.strip()
                 return_lines.append(line)
     else:
-        notify_user_prob('loadfile_lines cannot find '+folder+ ' '+fname)
+        log.error('loadfile_lines cannot find '+folder+ ' '+fname)
     return return_lines
 def remove_any_matching(tgt: list[str], exclude_patterns: list[str]) -> list[str]:
     """from a list of strings remove all which match any of a list of regexs;
