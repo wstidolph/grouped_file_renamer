@@ -2,13 +2,13 @@
 
 Usage: `python3 gfr.py --help`
 
-Rename files in directories (or trees) according to a per-directory ordering file
+Command line utility to rename files in directories (or trees) according to a per-directory ordering file
 while retaining grouping based on the ID field in the existing file names.
 
 Usage: see --help
 
 ## Renaming in directories
-Here's the driving use case: Epson's scanner software scans groups of photos into a directory (let's say `FOO`) and gives each photo file a name with a structure incorporating an ID, but the ID is based on scan order and as a photo publisher I want to rename the files.
+Here's the driving use case: Epson's scanner software scans groups of photos into a directory (let's say `FOO`) and gives each photo file a name with a structure incorporating an ID, but the ID is based on scan order and as a photo publisher I want to rename the files so they show up in my operating system's user interface with the order I want (based on the file names)
 
 The filenames are structured in each directory with the directory name as a prefix, a sequential ID, and then an optional suffix that tells whether the image file is:
 * the raw scan (no suffix) or
@@ -43,7 +43,9 @@ FOO_0002.jpg
 FOO_0002_a.jpg
 FOO_0002_b.jpg
 ```
-and then use this program to rename the scanner files, something like (depending on how you invoke python scripts in your environment):
+This is fine ... the photos display in the order you want, in tha tprgram (FastSTone or whatever). But, the operating system doesn't care about that order file - that's only for the third-party program to use! So if you just open the directory in your File Explorere or Finder or list them in your terminal, they're not in your desired order.
+
+So then, use this program to rename the scanner files to follow the order file listing: something like this command line (depending on how you invoke python scripts in your environment):
 
 `~/scans python3 gfr.py rename FOO` (accepting defaults for how to handle the new ID field)
 
@@ -97,7 +99,7 @@ work_party/in_0002.jpg
 work_party/in_0002_a.jpg
 work_party/.fssort.ini <= controls order just in work_party
 ```
-So now you want to start renaming at a root directory but decend into the driectories below (e.g., descend into `vatation` and `work_party`):
+So now you want to start renaming at a root directory but decend into the driectories below (e.g., descend into `vacation` and `work_party`):
 
 ``~/scans python3 gfr.py --do-subtree rename FOO` 
 
@@ -151,8 +153,8 @@ so apologies if coding sucks/is non-Pythonic (suggestions for improvement?)
 # Future
 This has met my needs, but as part of learning more Python I expect to tackle:
 * ~~modularize (`rename`, `undo`, `topshell`, and `support` modules I think)~~
-* tests covering UNDO
-* adopt python logging
+* ~~tests covering UNDO~~
+* ~~adopt python logging~~
 * filtering on extension as well as embedded-ID
 * add a simple per-directory flag/control file (`.gfr-control.ini`) to skip the dir, set different id-regex, whatever
 
