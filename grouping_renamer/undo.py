@@ -12,21 +12,21 @@ def get_history_filename(history_filename_root:str, dirlist: list[str]):
     histfiles = [h for h in dirlist_noext if h.startswith(hfr_noext)]
     if histfiles:
         hf = sorted(histfiles)
-        return hf[-1]+hfr_ext # should be oldest
+        return hf[-1] + hfr_ext # should be oldest
     else:
         log.warning('no history '+ history_filename_root + ' to reverse in '+ os.getcwd())
         return None
   
-def undo_rename(curr_name:str, prev_name:str, appender_str:str):
+def undo_rename(curr_name:str, prev_name:str, appender_str:str='new'):
     # if conflict, rename to <to_name>__<appender_str>
-
+  
     tgt_name = prev_name
     if os.path.exists(prev_name):
         tgt_name += '__' + appender_str
         
     log.debug('reverting name '+ curr_name+ '  to '+ tgt_name)
     try:
-        os.rename(curr_name, prev_name)
+        os.rename(curr_name, tgt_name)
     except FileNotFoundError:
         log.warning("file to revert: {0} (from history) does not exist".format(curr_name))
     except:
@@ -38,7 +38,7 @@ def undo_in_dir(history_filename_root:str, path:str='.',
     if not change_dir(path):
        return []
     # load the history file
-    dirlist = [f for f in os.listdir('.') if os.path.isfile(f)]
+    dirlist = [f for f in os.listdir(path) if os.path.isfile(f)]
     hfilename = get_history_filename(history_filename_root, dirlist)
 
     if hfilename:
