@@ -76,5 +76,25 @@ class TestUndo(unittest.TestCase):
         # remove file, both the reverted and the original names (in case renaming failed)
         self.files_to_cleanup=[curr_file_name, target_file_name, appended_file_name]
     
+    def test_undo_rename_if_curr_file_not_exist(self):
+        """if the file named does not exist, function should change nothing and emit WARNING log"""
+        curr_file='DOES_NOT_EXIST'
+        self.assertFalse(os.path.exists(curr_file))
+        
+        tgt_file='SHOULD_NOT_BE_CREATED'
+        self.assertFalse(os.path.exists(curr_file))
+        
+        expected_log_level=r'WARNING'
+        with self.assertLogs('undo', level='WARNING') as lc:
+            undo_mod.undo_rename(curr_file, tgt_file)
+            self.assertRegexpMatches(lc.output[0], expected_log_level)
+            self.assertRegexpMatches(lc.output[0], curr_file)
+        
+        # nothing should change if the file-to-be-renamed doesn't exist
+        self.assertFalse(os.path.exists(curr_file))
+        self.assertFalse(os.path.exists(curr_file))
+        
+    #def test_undo_in_dir(self):
+        # create temp dir
 if __name__ == '__main__':
     unittest.main()
