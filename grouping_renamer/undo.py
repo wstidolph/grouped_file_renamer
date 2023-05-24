@@ -17,7 +17,7 @@ def get_history_filename(history_filename_root:str, dirlist: list[str]):
         log.warning('no history '+ history_filename_root + ' to reverse in '+ os.getcwd())
         return None
   
-def undo_rename(curr_name:str, prev_name:str, appender_str:str):
+def undo_rename(curr_name:str, prev_name:str, appender_str:str='new'):
     # if conflict, rename to <to_name>__<appender_str>
   
     tgt_name = prev_name
