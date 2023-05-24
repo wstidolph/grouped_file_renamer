@@ -9,6 +9,7 @@ Usage: see --help
 NOTE: partly written to force me into learning some Python (3.11),
 so apologies if coding sucks/is non-Pythonic (suggestions for improvement?)
 """
+import logging
 
 from support import get_dirs_to_process
 from support import fetch_ignore
@@ -16,8 +17,8 @@ from rename import rename_in_dir
 from undo import undo_in_dir
 
 from support import notify_user, notify_user_dir, get_id_match
-# migrate to logging calls
-from support import set_verbosity, notify_user, notify_user_dir
+
+from support import set_verbosity
 from support import set_is_dry_run
 
 from typing_extensions import Annotated
@@ -30,6 +31,7 @@ __copyright = "Copyright Wayne Stidolph, 2023"
 __status    = "Development"
 
 main=typer.Typer() # for command processing
+log=logging.getLogger()
 
 @main.command()
 def rename(
@@ -73,7 +75,7 @@ def rename(
     
     #TODO as Python-learning, refactor these loops to be cleaenr - maybe w/ lambda and yield?
     dirs_to_process = get_dirs_to_process(startdir, exclude, do_subtree)
-    notify_user_dir('processing RENAME in dirs: ' + str(dirs_to_process))
+    log.info('processing RENAME in dirs: ' + str(dirs_to_process))
 
     used_tnames=[]
     next_dir_id_start = idstart
@@ -84,7 +86,7 @@ def rename(
                                     skip_if_no_orderfile)
         if not id_per_dir and len(used_tnames) > 0:
             last_id_used = get_id_match(used_tnames[-1], id_regex)
-            notify_user('continuing ID number sequence after '+ str(last_id_used))
+            log.debug('continuing ID number sequence after '+ str(last_id_used))
             next_dir_id_start = int(last_id_used) + idstep
 
 @main.command()
@@ -112,7 +114,7 @@ def undo(
     exclude = fetch_ignore('.gfr.ignore')
     
     dirs_to_process = get_dirs_to_process(startdir, exclude, do_subtree)
-    notify_user_dir('processing UNDO in dirs: ' + str(dirs_to_process))
+    log.info('processing UNDO in dirs: ' + str(dirs_to_process))
     for dir in dirs_to_process:
         undo_in_dir(history_filename_root, dir, keep_rename_hist)
     
