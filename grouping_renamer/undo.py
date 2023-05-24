@@ -38,7 +38,7 @@ def undo_in_dir(history_filename_root:str, path:str='.',
     if not change_dir(path):
        return []
     # load the history file
-    dirlist = [f for f in os.listdir('.') if os.path.isfile(f)]
+    dirlist = [f for f in os.listdir(path) if os.path.isfile(f)]
     hfilename = get_history_filename(history_filename_root, dirlist)
 
     if hfilename:

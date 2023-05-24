@@ -7,7 +7,8 @@ import tempfile
 from pathlib import Path
 
 import grouping_renamer.undo as undo_mod
-
+import helpers # test support code
+    
 # Undo testing 
            
 class TestUndo(unittest.TestCase):
@@ -22,6 +23,7 @@ class TestUndo(unittest.TestCase):
                 os.remove(f)
             except:
                 pass
+
 
     def test_get_history_filename(self):
         oldest= 'HF_2021_05_02.csv'
@@ -93,8 +95,92 @@ class TestUndo(unittest.TestCase):
         # nothing should change if the file-to-be-renamed doesn't exist
         self.assertFalse(os.path.exists(curr_file))
         self.assertFalse(os.path.exists(curr_file))
+              
+    def test_undo_in_dir(self):
+        """ensure files in history CSV are renamed, othr files are not, and the history file is removed"""
+        with tempfile.TemporaryDirectory() as td:
+            history_filename_root="hf"
+            keep_rename_history=False
+            adapt_case=False
+            num_files=3
+            unchanging_files=['SHOULD_NOT_CHANGE.jpg', 'silly.JPG', 'a']
+            #make files in the directory, including 'hf_<some_date>.csv'
+            helpers.h_create_rename_files(td, history_filename_root, unchanging_files, num_files)
+            dlist=os.listdir(td)
+            self.assertNotEqual(dlist, []) # there must be at *least* the history file!
+            
+            # the undo_in_dir should rename files and remove the history file
+            undo_mod.undo_in_dir(history_filename_root+'.csv', td, keep_rename_history, adapt_case)
+            dlist=os.listdir(td)
+
+            # all files starting with 'A_' should now end with '_old'
+            ends_with_old = r'_old.jpg$'
+            A_files = [f for f in dlist if f.startswith('A_')]
+            for a in A_files:
+                self.assertRegexpMatches(a, ends_with_old)
+                
+            # non-rename files should not change
+            other_f = [f for f in dlist if not f.startswith('A_')]
+            for uf in unchanging_files:
+                self.assertIn(uf, other_f)
+                
+            # history file file should be removed
+            hflist = [f for f in dlist if f.startswith(history_filename_root)]
+            self.assertEqual(hflist, [])
+
+    def test_undo_in_dir_if_not_history(self):
+        """ensure a directory with no history file is left unchanged"""
+        with tempfile.TemporaryDirectory() as td:
+            history_filename_root="hf"
+            keep_rename_history=False
+            adapt_case=False
+            num_files=3
+            unchanging_files=['SHOULD_NOT_CHANGE.jpg', 'silly.JPG', 'a']
+            #make files in the directory, including 'hf_<some_date>.csv'
+            helpers.h_create_rename_files(td, history_filename_root, unchanging_files, num_files)
+            dlist=os.listdir(td)
+            
+            hf = [f for f in dlist if f.startswith(history_filename_root)]
+            for h in hf:
+                os.remove(os.path.join(td, h))
+            # OK, we have files but no history; let's update the dlist
+            dlist=os.listdir(td)
+            
+            # invoke the undo
+            undo_mod.undo_in_dir(history_filename_root+'.csv', td, keep_rename_history, adapt_case)
+            undone_dlist = os.listdir(td)
+            
+            # and ensure same entries in dlist and undone_dlist
+            self.assertListEqual(dlist, undone_dlist)
         
-    #def test_undo_in_dir(self):
-        # create temp dir
+    def test_undo_in_dir_if_empty_history(self):
+        with tempfile.TemporaryDirectory() as td:
+            history_filename_root="hf"
+            keep_rename_history=False
+            adapt_case=False
+            num_files=0
+            unchanging_files=['SHOULD_NOT_CHANGE.jpg', 'silly.JPG', 'a']
+            #make files in the directory, including 'hf_<some_date>.csv'
+            helpers.h_create_rename_files(td, history_filename_root, unchanging_files, num_files)
+            dlist=os.listdir(td)
+            self.assertNotEqual(dlist, []) # there must be at *least* the history file!
+            
+            A_orig_files = [f for f in dlist if f.startswith('A_')]
+            # the undo_in_dir should rename files and remove the history file
+            undo_mod.undo_in_dir(history_filename_root+'.csv', td, keep_rename_history, adapt_case)
+            dlist=os.listdir(td)
+
+            A_after_files = [f for f in dlist if f.startswith('A_')]
+            self.assertEqual(A_orig_files, A_after_files)
+                
+            # non-rename files should not change
+            other_f = [f for f in dlist if not f.startswith('A_')]
+            for uf in unchanging_files:
+                self.assertIn(uf, other_f)
+                
+            # and history file file should be removed
+            hflist = [f for f in dlist if f.startswith(history_filename_root)]
+            self.assertEqual(hflist, [])
+        
 if __name__ == '__main__':
     unittest.main()
