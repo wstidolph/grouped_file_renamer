@@ -12,7 +12,7 @@ def get_history_filename(history_filename_root:str, dirlist: list[str]):
     histfiles = [h for h in dirlist_noext if h.startswith(hfr_noext)]
     if histfiles:
         hf = sorted(histfiles)
-        return hf[-1]+hfr_ext # should be oldest
+        return hf[-1] + hfr_ext # should be oldest
     else:
         log.warning('no history '+ history_filename_root + ' to reverse in '+ os.getcwd())
         return None
