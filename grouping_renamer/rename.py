@@ -1,13 +1,15 @@
 import os
 import datetime
 from typing import List
+import logging
 
 from support import change_dir,fetch_lists,loadfile_lines
 from support import find_case_insensitive, remove_any_matching, scrub_dups, scrub_not_matching
 from support import get_fullid,get_next_id
-# notify* should move to logging calls
-from support import notify_user,notify_user_file,notify_user_dir, notify_user_prob
+
 from support import get_is_dry_run
+
+log = logging.getLogger('rename')
 
 def make_bu_name(fn: str, bustr: str):
     """add backup-indication string (bustr) to the fn without change file extension"""
@@ -94,18 +96,18 @@ def do_rename(rename_list, hist_file_obj) -> List[str]:
         
         is_sane = True
         if os.path.isfile(tname):
-            notify_user_prob('"to" file already exists: ' + tname)
+            log.warning('"to" file already exists: ' + tname)
             is_sane=False
         if not os.path.exists(fname):
-            notify_user_prob('"from" file missing: ' + fname)
+            log.info('"from" file missing: ' + fname)
             is_sane= False
         if is_sane :
-            notify_user_file('renaming: '+ fname + ' to '+ tname)
+            log.debug('renaming: '+ fname + ' to '+ tname)
             used_newnames.append(tname)
             if not get_is_dry_run():
                 os.rename(fname, tname)
                 hist_file_obj.write(fname+','+tname+'\n')
-    notify_user_dir('dir '+os.getcwd()+' renamed '+ str(len(used_newnames)) + ' files')
+    log.info('dir '+os.getcwd()+' renamed '+ str(len(used_newnames)) + ' files')
     return used_newnames
                     
 def rename_in_dir(path, prefix_ctl,
@@ -114,14 +116,14 @@ def rename_in_dir(path, prefix_ctl,
                  skip_if_no_orderfile,
                  adapt_case=True) -> list[str]:
     """execute renaming in a single folder"""
-    notify_user('do_in_folder ' + path)
+    log.info('do_in_folder ' + path)
     if not change_dir(path): # TODO change to pass path, not changing directory
        return []
 
     is_orderfile = os.path.isfile(orderfile_name)
     if (not is_orderfile or not os.access(orderfile_name, os.R_OK)) and skip_if_no_orderfile:
-        notify_user_dir('skipping '+path+ ' because no readable orderfile '+orderfile_name)
-        notify_user_dir('is_orderfile is'+ str(is_orderfile))
+        log.info('skipping '+path+ ' because no readable orderfile '+orderfile_name)
+        log.info('is_orderfile is'+ str(is_orderfile))
         return []
     
     (dirlist, orderedlines_init) = fetch_lists('.', orderfile_name)
@@ -159,10 +161,10 @@ def rename_in_dir(path, prefix_ctl,
                 os.rename(orderfile_name, orderfile_bak) 
                 hist_file_obj.write(orderfile_name+','+orderfile_bak+'\n')
             except FileNotFoundError:
-                notify_user_prob("Orderfile: {0} does not exist".format(path))
+                log.warning("Orderfile: {0} magically does not exist during in rename_in_dir()".format(path))
                 return []
             except PermissionError:
-                notify_user_prob("You do not have permissions to rename (back up) {0}".format(path))
+                log.warning("You do not have permissions to rename (back up) {0}".format(path))
                 return []
                     
         used_ids = do_rename(rename_list, hist_file_obj) # the real action!

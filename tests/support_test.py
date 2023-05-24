@@ -1,5 +1,7 @@
 import unittest
 import os
+import tempfile
+
 import grouping_renamer.support as spt
 
 class TestSupport(unittest.TestCase):
@@ -84,6 +86,16 @@ class TestSupport(unittest.TestCase):
         # here's how to get the remainder
         rem_string = name_w_suffix[idm.span()[1]:]
         self.assertEqual(rem_string, suffix)
+      
+    def test_change_dir(self):
+        """ensure we can change dirctories"""  
+        start_dir=os.getcwd()
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            spt.change_dir(tmpdirname)
+            self.assertTrue(tmpdirname != start_dir)
         
+        spt.change_dir(start_dir)
+        self.assertTrue(os.getcwd() == start_dir)     
+
 if __name__ == '__main__':
     unittest.main()
