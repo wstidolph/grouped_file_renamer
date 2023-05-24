@@ -22,9 +22,6 @@ class TestUndo(unittest.TestCase):
                 os.remove(f)
             except:
                 pass
-        
-    def test_this_file_loads(self):
-        self.assertTrue(True)
 
     def test_get_history_filename(self):
         oldest= 'HF_2021_05_02.csv'
