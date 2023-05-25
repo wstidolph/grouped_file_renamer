@@ -2,7 +2,7 @@ import datetime
 import os
 
 # create files and rename history file in a dir
-def h_create_rename_files(dirpath, hf_root, unchanging:list[str], num_files=3):
+def h_create_rename_files(dirpath, hf_root='hf', unchanging:list[str]=[], num_files=3):
 
     # open a history file with header
     now = datetime.datetime.now()
