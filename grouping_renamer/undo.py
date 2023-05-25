@@ -1,7 +1,7 @@
 import os
 import logging
 
-from support import change_dir,loadfile_lines
+from support import change_dir,loadfile_lines, is_dry_run
 
 log=logging.getLogger('undo')
 
@@ -25,12 +25,13 @@ def undo_rename(curr_name:str, prev_name:str, appender_str:str='new'):
         tgt_name += '__' + appender_str
         
     log.debug('reverting name '+ curr_name+ '  to '+ tgt_name)
-    try:
-        os.rename(curr_name, tgt_name)
-    except FileNotFoundError:
-        log.warning("file to revert: {0} (from history) does not exist".format(curr_name))
-    except:
-        log.warning('could not revert ' + curr_name + ' to ' + prev_name)
+    if not is_dry_run():
+        try:
+            os.rename(curr_name, tgt_name)
+        except FileNotFoundError:
+            log.warning("file to revert: {0} (from history) does not exist".format(curr_name))
+        except:
+            log.warning('could not revert ' + curr_name + ' to ' + prev_name)
       
 def undo_in_dir(history_filename_root:str, path:str='.',
                 keep_rename_history=False, adapt_case:bool=False):
@@ -53,7 +54,8 @@ def undo_in_dir(history_filename_root:str, path:str='.',
                     break
                 else:
                     undo_rename(curr_name, prev_name, appender_str)
-        if keep_rename_history:
-            os.rename(hfilename, 'u_'+ hfilename)
-        else:
-            os.remove(hfilename)
+        if not is_dry_run():
+            if keep_rename_history:
+                os.rename(hfilename, 'u_'+ hfilename)
+            else:
+                os.remove(hfilename)
