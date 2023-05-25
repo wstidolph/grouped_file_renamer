@@ -188,6 +188,61 @@ class TestUndo(unittest.TestCase):
             # and history file file should be removed
             hflist = [f for f in dlist if f.startswith(history_filename_root)]
             self.assertEqual(hflist, [])
-        
+
+    def test_undo_in_dir_respects_dryrun(self, mock_dr):
+         """undo_in_dir respects the flag (doesn't rename or delete history files)"""
+         # set up a directory with a history file
+         with tempfile.TemporaryDirectory() as td:
+            history_filename_root="hf"
+            keep_rename_history=False
+            adapt_case=False
+            #make files in the directory, including 'hf_<some_date>.csv'
+            helpers.h_create_rename_files(td)
+            
+            dlist=os.listdir(td)
+            hflist = [f for f in dlist if f.startswith(history_filename_root)]
+            self.assertNotEqual(hflist, []) # there must be at *least* the history file!
+            
+         # execute the undo_in_dir with dryrun on, check no hange to history file
+            mock_dr.return_value=True
+            undo.undo_in_dir(history_filename_root+'.csv', td, keep_rename_history, adapt_case)
+            dlist=os.listdir(td)
+            hflist_new = [f for f in dlist if f.startswith(history_filename_root)]
+            self.assertEqual(hflist_new, hflist)
+             
+         # execute the undo with dryrun off
+            mock_dr.return_value=False
+            undo.undo_in_dir(history_filename_root+'.csv', td, keep_rename_history, adapt_case)
+            dlist=os.listdir(td)
+            hflist_new = [f for f in dlist if f.startswith(history_filename_root)]
+            
+            hf_gone = (hflist_new == []) or hflist[0].startswith('u_')
+            self.assertTrue(hf_gone) # there must be at *least* the history file!
+         
+    def test_undo_rename_respects_dryrun(self, mock_dr):
+        """verify undo_rename() respects the flag, doesn't update actual files"""
+        # rather than asserting os.rename isn't called, lets watch for real effect
+        # since maybe the file name interacts with the renaming?
+        # slower but that's OK for me
+        # ensure there is one real file to rename
+        with tempfile.TemporaryDirectory() as td:
+            dummy_abs = os.path.join(td, 'DUMMY')
+            rename_tgt_abs = os.path.join(td, 'RENAMED')
+            f = open(dummy_abs, 'w')
+            f.close()
+            self.assertTrue(os.path.exists(dummy_abs))
+            self.assertFalse(os.path.exists(rename_tgt_abs))
+            
+            # with dryrun on, no change
+            mock_dr.return_value=True
+            undo.undo_rename(dummy_abs, rename_tgt_abs)
+            self.assertTrue(os.path.exists(dummy_abs))
+            self.assertFalse(os.path.exists(rename_tgt_abs))
+            
+            # with dryrun off, changed name
+            mock_dr.return_value=False
+            undo.undo_rename(dummy_abs, rename_tgt_abs)
+            self.assertFalse(os.path.exists(dummy_abs))
+            self.assertTrue(os.path.exists(rename_tgt_abs))
 if __name__ == '__main__':
     unittest.main()
