@@ -9,7 +9,7 @@ import grouping_renamer.rename as ren_mod
 from unittest import mock
 
 # turn off dry_run flag so we can actually write to the temp dirs
-@mock.patch('grouping_renamer.undo.get_is_dry_run', return_value=False)    
+@mock.patch('grouping_renamer.rename.get_is_dry_run', return_value=False)    
 class TestRename(unittest.TestCase):
     def test_fix_orderlines_adapts_to_case(self, mock_dr):
         olist=['b', 'a', 'X_i0']
@@ -28,7 +28,6 @@ class TestRename(unittest.TestCase):
         """
         Test that it can load the ordered names file and the dir listings
         """
-        ren_mod.is_dry_run = True # prevent tests from altering files
         ren_mod.verbose_level=2 # set globals
         
         folder='tests'
@@ -54,9 +53,6 @@ class TestRename(unittest.TestCase):
         """ test that we find the orderfile if case mismatch on case-sensitive filesys"""
         
         #  not going to try and get the edge cases, just a quick check
-        
-        ren_mod.is_dry_run = True # prevent tests from altering files
-        ren_mod.verbose_level=2 # set globals
         
         folder='tests'
         matched_case='fssort_test.dat' #file should be there in tests dir
