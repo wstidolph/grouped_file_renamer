@@ -6,10 +6,12 @@ import os
 from pathlib import Path
 
 import grouping_renamer.rename as ren_mod
+from unittest import mock
 
-
+# turn off dry_run flag so we can actually write to the temp dirs
+@mock.patch('grouping_renamer.undo.get_is_dry_run', return_value=False)    
 class TestRename(unittest.TestCase):
-    def test_fix_orderlines_adapts_to_case(self):
+    def test_fix_orderlines_adapts_to_case(self, mock_dr):
         olist=['b', 'a', 'X_i0']
         dlist=['a', 'a1', 'b', 'x_i0', 'x_i0010']
         
@@ -22,7 +24,7 @@ class TestRename(unittest.TestCase):
         # with case adapt, X_i0 should match and return x_i0 
         self.assertEquals(olf, ['b','a', 'x_i0'])
                         
-    def test_fetch_lists_loads_data(self):
+    def test_fetch_lists_loads_data(self, mock_dr):
         """
         Test that it can load the ordered names file and the dir listings
         """
@@ -48,7 +50,7 @@ class TestRename(unittest.TestCase):
         self.assertNotEqual(filenames, [])
         self.assertIn('fssort_test.dat', filenames)
     
-    def test_fetch_lists_adapts_case(self):
+    def test_fetch_lists_adapts_case(self, mock_dr):
         """ test that we find the orderfile if case mismatch on case-sensitive filesys"""
         
         #  not going to try and get the edge cases, just a quick check
@@ -76,7 +78,7 @@ class TestRename(unittest.TestCase):
         self.assertEqual(lines_from_mismatched_no_adapt, []) # FIXME this would fail on case-insensitive FS
         self.assertNotEqual(lines_from_mismatched_adapted, []) # should load from fssort_test.dat    
         
-    def test_make_rename_list(self):
+    def test_make_rename_list(self, mock_dr):
         """
         Test that it makes the replacement list
         """
