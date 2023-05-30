@@ -16,13 +16,16 @@ log = logging.getLogger('support')
 verbose_level:int=3
 def set_verbosity(level: int):
     verbose_level = level
+    logging.basicConfig(level=level)
     
 is_dry_run=True
 def set_is_dry_run(dryrun):
+    global is_dry_run
     is_dry_run=dryrun
     return
 
 def get_is_dry_run():
+    global is_dry_run
     return is_dry_run
     
 # move to 'id_handling' module?

@@ -55,7 +55,7 @@ def rename(
         id_per_dir:Annotated[bool,
         typer.Option(help='should ID sequence restart in each dir')]='True',
         
-        verbosity:Annotated[int, typer.Option(help='0: mute, 1: probs, 2: per-dir, 3: per-file')]=1,
+        verbosity:Annotated[int, typer.Option(help='0: mute, 30: probs, 20: info (per-dir), 10: debug (per-file)')]=1,
         
         skip_if_no_orderfile:bool=True,
         id_regex:str=r'\d{2,5}',
