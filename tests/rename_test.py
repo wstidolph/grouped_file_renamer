@@ -7,6 +7,8 @@ from pathlib import Path
 
 import grouping_renamer.rename as ren_mod
 from unittest import mock
+import tempfile
+import helpers # test support code
 
 # turn off dry_run flag so we can actually write to the temp dirs
 @mock.patch('grouping_renamer.rename.get_is_dry_run', return_value=False)    
@@ -100,5 +102,21 @@ class TestRename(unittest.TestCase):
         self.assertEqual(rd[2]['from'], expected[2]['from'])
         self.assertEqual(rd[2]['to'], expected[2]['to'])
 
+    def test_rename_base_case(self, mock_dr):
+        # will need dir with files to be renamed
+        # dryrun off, as is default
+        with tempfile.TemporaryDirectory() as td:
+            history_filename_root="hf"
+            keep_rename_history=False
+            adapt_case=False
+            #make files in the directory, including 'hf_<some_date>.csv'
+            helpers.h_create_rename_files(td) # default is three files, A_1, A_2, A_3
+            
+            dlist=os.listdir(td)
+            hflist = [f for f in dlist if f.startswith(history_filename_root)]
+            self.assertNotEqual(hflist, []) # there must be at *least* the history file!
+            
+            
+            
 if __name__ == '__main__':
     unittest.main()
